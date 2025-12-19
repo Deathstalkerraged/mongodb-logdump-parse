@@ -1,0 +1,6 @@
+timestamp,level,message
+2024-01-01 10:00:00,INFO,"Query executed {find: users, filter: {status: active}, limit: 10}"
+2024-01-01 10:01:00,WARN,"Slow query detected {find: orders, filter: {date: {$gte: 2024}}, sort: {created_at: -1}}"
+2024-01-01 10:02:00,INFO,"Query executed {find: products, filter: {category: electronics}}"
+2024-01-01 10:03:00,WARN,"Slow query detected {find: users, filter: {status: active, age: {$gt: 18}}, projection: {name: 1}}"
+2024-01-01 10:04:00,ERROR,"Query timeout {find: orders, filter: {status: pending}, sort: {date: -1}}"
