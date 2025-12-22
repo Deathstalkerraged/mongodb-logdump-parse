@@ -13,7 +13,7 @@ struct QueryPattern {
     index_used: String,
     plan_summary: String,
     duration_ms: Option<i64>,
-    field_values: HashMap<String, String>, // field -> value mapping
+    field_values: HashMap<String, String>,
 }
 
 impl std::fmt::Display for QueryPattern {
@@ -204,7 +204,9 @@ fn parse_query_pattern(json_str: &str) -> Option<QueryPattern> {
 
 fn find_query_patterns_in_braces(csv_path: &str) -> Result<Vec<(QueryPattern, usize)>, Box<dyn Error>> {
     let file = File::open(csv_path)?;
-    let mut reader = Reader::from_reader(file);
+    let mut reader = csv::ReaderBuilder::new()
+        .flexible(true)
+        .from_reader(file);
     
     let mut pattern_counts: HashMap<String, (QueryPattern, usize)> = HashMap::new();
     
@@ -315,7 +317,7 @@ fn analyze_field_value_distributions(patterns: &[(QueryPattern, usize)]) -> BTre
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let csv_file = "/Users/rahulhegde/Downloads/Untitled Discover session (1).csv";
+    let csv_file = "/Users/rahulhegde/Downloads/Untitled Discover session (4).csv";
     
     match find_query_patterns_in_braces(csv_file) {
         Ok(patterns) => {
