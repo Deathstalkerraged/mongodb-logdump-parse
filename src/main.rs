@@ -62,7 +62,15 @@ fn extract_fields_from_object(obj: &Value) -> Vec<String> {
 }
 
 fn extract_field_values_from_object(obj: &Value, prefix: &str) -> HashMap<String, String> {
+    extract_field_values_from_object_with_depth(obj, prefix, 0, 3)
+}
+
+fn extract_field_values_from_object_with_depth(obj: &Value, prefix: &str, current_depth: usize, max_depth: usize) -> HashMap<String, String> {
     let mut field_values = HashMap::new();
+    
+    if current_depth >= max_depth {
+        return field_values;
+    }
     
     match obj {
         Value::Object(map) => {
@@ -103,9 +111,10 @@ fn extract_field_values_from_object(obj: &Value, prefix: &str) -> HashMap<String
                                 field_values.insert(field_name, format!("[{} items]", arr.len()));
                             }
                         }
-                        Value::Object(_) => {
-                            // For nested objects, just indicate it's an object
-                            field_values.insert(field_name, "{object}".to_string());
+                        Value::Object(nested_obj) => {
+                            // Recursively parse nested objects with limited depth
+                            let nested_values = extract_field_values_from_object_with_depth(value, &field_name, current_depth + 1, max_depth);
+                            field_values.extend(nested_values);
                         }
                         _ => {}
                     }
@@ -317,7 +326,7 @@ fn analyze_field_value_distributions(patterns: &[(QueryPattern, usize)]) -> BTre
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let csv_file = "/Users/rahulhegde/Downloads/Untitled Discover session (4).csv";
+    let csv_file = "/Users/rahulhegde/Downloads/Untitled Discover session (5).csv";
     
     match find_query_patterns_in_braces(csv_file) {
         Ok(patterns) => {
